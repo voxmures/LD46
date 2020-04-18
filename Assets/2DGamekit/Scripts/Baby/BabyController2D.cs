@@ -5,7 +5,7 @@ namespace Gamekit2D
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Collider2D))]
-    public class CharacterController2D : MonoBehaviour
+    public class BabyController2D : MonoBehaviour
     {
         [Tooltip("The Layers which represent gameobjects that the Character Controller can be grounded on.")]
         public LayerMask groundedLayerMask;
@@ -22,8 +22,11 @@ namespace Gamekit2D
         RaycastHit2D[] m_FoundHits = new RaycastHit2D[3];
         Collider2D[] m_GroundColliders = new Collider2D[3];
         Vector2[] m_RaycastPositions = new Vector2[3];
+        public static bool isHeld = false;
+        public static float dir = 0.0f;
 
         public bool IsGrounded { get; protected set; }
+        //public bool IsHeld { get; protected set; }
         public bool IsCeilinged { get; protected set; }
         public Vector2 Velocity { get; protected set; }
         public Rigidbody2D Rigidbody2D { get { return m_Rigidbody2D; } }
@@ -44,22 +47,66 @@ namespace Gamekit2D
             m_ContactFilter.useTriggers = false;
 
             Physics2D.queriesStartInColliders = false;
+
         }
+
+        bool CheckCollisionCharacter()
+        {
+            GameObject character = GameObject.Find("Ellen");
+            Vector2 c_pos = character.transform.position;
+            m_PreviousPosition = m_Rigidbody2D.position;
+
+            float dist =  (c_pos - m_PreviousPosition).magnitude;
+            return dist < 1.0;
+
+        }
+
 
         void FixedUpdate()
         {
-            m_PreviousPosition = m_Rigidbody2D.position;
-            m_CurrentPosition = m_PreviousPosition + m_NextMovement;
-            Velocity = (m_CurrentPosition - m_PreviousPosition) / Time.deltaTime;
 
+            if (Input.GetKeyDown("d"))
+                dir = 1.0f;
+            else if (Input.GetKeyDown("a"))
+                dir = -1.0f;
+
+            m_PreviousPosition = m_Rigidbody2D.position;
+            if (isHeld == false)
+            {
+                isHeld = CheckCollisionCharacter();
+            }
+            if (isHeld)
+            {
+                GameObject character = GameObject.Find("Ellen");
+                Vector2 c_pos = character.transform.position;
+                m_CurrentPosition = c_pos;
+
+                m_CurrentPosition.y += 1.0f;
+                m_CurrentPosition.x += dir;
+                Debug.Log(dir);
+                Debug.Log(m_CurrentPosition);
+
+                //m_Rigidbody2D.MovePosition(c_pos);
+            }
+            else
+            {
+                m_CurrentPosition = m_PreviousPosition + m_NextMovement;
+                m_CurrentPosition = m_PreviousPosition + m_NextMovement;
+                Velocity = (m_CurrentPosition - m_PreviousPosition) / Time.deltaTime;
+            }
+            
             m_Rigidbody2D.MovePosition(m_CurrentPosition);
             m_NextMovement = Vector2.zero;
 
             CheckCapsuleEndCollisions();
             CheckCapsuleEndCollisions(false);
-           
+
+
+
+            //GameObject.Find("Baby").transform.position = new_pos; 
         }
 
+        
         /// <summary>
         /// This moves a rigidbody and so should only be called from FixedUpdate or other Physics messages.
         /// </summary>
@@ -79,8 +126,9 @@ namespace Gamekit2D
             m_PreviousPosition += delta;
             m_CurrentPosition = position;
             m_Rigidbody2D.MovePosition(position);
+            Debug.Log(position);
         }
-
+        
         /// <summary>
         /// This updates the state of IsGrounded.  It is called automatically in FixedUpdate but can be called more frequently if higher accurracy is required.
         /// </summary>
