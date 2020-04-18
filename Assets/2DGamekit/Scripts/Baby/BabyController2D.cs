@@ -52,7 +52,7 @@ namespace Gamekit2D
 
         bool CheckCollisionCharacter()
         {
-            GameObject character = GameObject.Find("Ellen");
+            GameObject character = GameObject.Find("Stork");
             Vector2 c_pos = character.transform.position;
             m_PreviousPosition = m_Rigidbody2D.position;
 
@@ -77,7 +77,7 @@ namespace Gamekit2D
             }
             if (isHeld)
             {
-                GameObject character = GameObject.Find("Ellen");
+                GameObject character = GameObject.Find("Stork");
                 Vector2 c_pos = character.transform.position;
                 m_CurrentPosition = c_pos;
 
