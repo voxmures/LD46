@@ -83,8 +83,7 @@ namespace Gamekit2D
 
                 m_CurrentPosition.y += 1.0f;
                 m_CurrentPosition.x += dir;
-                Debug.Log(dir);
-                Debug.Log(m_CurrentPosition);
+
 
                 //m_Rigidbody2D.MovePosition(c_pos);
             }
@@ -126,7 +125,8 @@ namespace Gamekit2D
             m_PreviousPosition += delta;
             m_CurrentPosition = position;
             m_Rigidbody2D.MovePosition(position);
-            Debug.Log(position);
+
+
         }
         
         /// <summary>

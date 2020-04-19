@@ -407,6 +407,7 @@ MonoBehaviour:
   bulletSpeed: 30
   holdingGunTimeoutDuration: 1.5
   rightBulletSpawnPointAnimated: 1
+  airHeldDecay: 0.3
   cameraHorizontalFacingOffset: 2
   cameraHorizontalSpeedOffset: 0.2
   cameraVerticalInputOffset: 2
