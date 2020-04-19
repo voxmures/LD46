@@ -19,6 +19,7 @@ namespace Gamekit2D
         }
 
         public SpriteRenderer spriteRenderer;
+        public MeshRenderer meshRenderer;
         public Damageable damageable;
         public Damager meleeDamager;
         public Transform facingLeftBulletSpawnPoint;
@@ -54,6 +55,11 @@ namespace Gamekit2D
         public float bulletSpeed = 5f;
         public float holdingGunTimeoutDuration = 10f;
         public bool rightBulletSpawnPointAnimated = true;
+        public float airbornePush = 0.000001f;
+        public float airborneHeldDecay = 10f;
+
+        public bool prevFaceRight = true;
+        public bool prevFaceLeft = false;
 
         public float cameraHorizontalFacingOffset;
         public float cameraHorizontalSpeedOffset;
@@ -398,7 +404,24 @@ namespace Gamekit2D
             {
                 spriteRenderer.flipX = spriteOriginallyFacesLeft;
                 m_CurrentBulletSpawnPoint = facingRightBulletSpawnPoint;
+                GameObject.Find("Stork").transform.Rotate(0.0f, 180.0f, 0.0f, Space.Self);
             }
+
+            if (prevFaceLeft != faceLeft)
+            {
+                Debug.Log("FaceLeft");
+                GameObject.Find("Stork").transform.Rotate(0.0f, 180.0f, 0.0f, Space.Self);
+            }
+
+            if (prevFaceRight != faceRight)
+            {
+                Debug.Log("FaceRight");
+                GameObject.Find("Stork").transform.Rotate(0.0f, -180.0f, 0.0f, Space.Self);
+            }
+            prevFaceLeft = faceLeft;
+            prevFaceRight = faceRight;
+
+
         }
 
         public void UpdateFacing(bool faceLeft)
@@ -554,11 +577,22 @@ namespace Gamekit2D
 
         public void AirborneVerticalMovement()
         {
+
             if (Mathf.Approximately(m_MoveVector.y, 0f) || m_CharacterController2D.IsCeilinged && m_MoveVector.y > 0f)
             {
                 m_MoveVector.y = 0f;
             }
-            m_MoveVector.y -= gravity * Time.deltaTime;
+            
+            if (PlayerInput.Instance.Jump.Down && m_MoveVector.y <= float.Epsilon)
+            {   
+                m_MoveVector.y = jumpSpeed;
+            }
+            else
+            {
+                m_MoveVector.y -= gravity * Time.deltaTime;
+            }
+               
+
         }
 
         public bool CheckForJumpInput()
